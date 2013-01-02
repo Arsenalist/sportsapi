@@ -1,1 +1,1 @@
-function rrapiinjector(d){document.getElementById('rr_ms').innerHTML=d;}
+function rrapiinjector(d){document.getElementById('rrapicontainer').innerHTML=d;}
