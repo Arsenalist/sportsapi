@@ -14,13 +14,11 @@ line_scores_html_store = 'line_scores_html';
 mini_schedule_json_store = 'mini_schedule_json';
 mini_schedule_html_store = 'mini_schedule_html';
 
-injector_function_source = fs.readFileSync('./jsfunctions/injector.js', 'UTF-8');
-console.log("it is ", injector_function_source);
+callback_linescore  = fs.readFileSync('./jsfunctions/callbacklinescore.js', 'UTF-8');
+callback_minischedule  = fs.readFileSync('./jsfunctions/callbackminischedule.js', 'UTF-8');
 
-app.get('/nba/v1/linescore/:team/:callback?', nba.findLineScoreByTeam);
 app.get('/nba/v1/linescorehtml/:team/:callback', nba.findLineScoreHtmlByTeam);
 
-app.get('/nba/v1/minischedule/:team/:callback?', nba.findMiniScheduleByTeam);
 app.get('/nba/v1/minischedulehtml/:team/:callback', nba.findMiniScheduleHtmlByTeam);
 
 

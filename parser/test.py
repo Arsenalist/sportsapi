@@ -6,7 +6,7 @@ import common
 import redis
 import pystache
 
-teams = open('./teams.txt').readlines()
+teams = (line.strip() for line in open('./teams.txt'))
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 line_scores_json_store = 'line_scores_json'
