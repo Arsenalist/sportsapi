@@ -7,6 +7,7 @@ import redis
 import pystache
 
 teams = (line.strip() for line in open('./teams.txt'))
+teams = ['tor']
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 line_scores_json_store = 'line_scores_json'
@@ -15,12 +16,15 @@ line_scores_html_store = 'line_scores_html'
 mini_schedule_json_store = 'mini_schedule_json'
 mini_schedule_html_store = 'mini_schedule_html'
 
+team_summary_html_store = 'team_summary_html'
+
 
 
 def html(url):
     return urllib2.urlopen(url).read();
 
 for team in teams:
+    '''
     schedule_html = html('http://espn.go.com/nba/team/schedule/_/name/' + team)
     latest_game_id = common.get_latest_game_id(schedule_html)
     recap_html = html('http://espn.go.com/nba/recap?id=' + latest_game_id)
@@ -54,4 +58,14 @@ for team in teams:
     result = r.hset(mini_schedule_html_store, team, mini_schedule_html)
     if result != 0 and result != 1:
         raise Exception('Could not set mini_schedule for ' + team)
-   
+    '''
+    pass
+summary_html = html('http://www.basketball-reference.com/leagues/NBA_2013.html') 
+team_summary = common.get_summary_stats(summary_html)
+for team in team_summary:
+    txt = open("./templates/team_summary.mustache", 'r').read()
+    team_summary_html = json.dumps(pystache.render(txt, team.__dict__).encode('utf-8'))
+    result = r.hset(team_summary_html_store, team, team_summary_html)
+    if result != 0 and result != 1:
+        raise Exception('Could not set team summary for ' + team)
+      
