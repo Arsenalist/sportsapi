@@ -31,7 +31,7 @@ exports.findSummaryHtmlByTeam = function (req, res) {
 
 
 function setJsonResponseHeaders(res, data) {
-    res.header('content-type', 'text/json');
+    res.header('content-type', 'text/javascript');
     res.header('content-length', data == null ? 0 : data.length);    
     res.end(data);
 }

@@ -7,7 +7,6 @@ import redis
 import pystache
 
 teams = (line.strip() for line in open('./teams.txt'))
-teams = ['tor']
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 line_scores_json_store = 'line_scores_json'
@@ -24,42 +23,31 @@ def html(url):
     return urllib2.urlopen(url).read();
 
 for team in teams:
-    '''
     schedule_html = html('http://espn.go.com/nba/team/schedule/_/name/' + team)
     latest_game_id = common.get_latest_game_id(schedule_html)
     recap_html = html('http://espn.go.com/nba/recap?id=' + latest_game_id)
     line_score = common.get_line_score(recap_html)
 
-    # store line score json in redis
-    result = r.hset(line_scores_json_store, team, json.dumps(line_score))
-    if result != 0 and result != 1:
-        raise Exception('Could not set line_score for ' + team)
-   
     # store line score html in redis
     txt = open("./templates/line_score.mustache", 'r').read()
     line_score_html = json.dumps(pystache.render(txt, line_score).encode('utf-8'))
     result = r.hset(line_scores_html_store, team, line_score_html)
     if result != 0 and result != 1:
         raise Exception('Could not set line_score for ' + team)
+    print "Stored line score for %s" % team
 
         
     # get mini schedule        
     mini_schedule = common.get_mini_schedule(schedule_html)
-
-     # store mini schedule json in redis
-    result = r.hset(mini_schedule_json_store, team, json.dumps(mini_schedule))
-    if result != 0 and result != 1:
-        raise Exception('Could not set mini schedule for ' + team)
    
     # store mini schedule  html in redis
     txt = open("./templates/mini_schedule.mustache", 'r').read()
-    mini_schedule_html = json.dumps(pystache.render(txt, mini_schedule).encode('utf-8'))
-    print mini_schedule_html
+    mini_schedule_html = json.dumps(pystache.render(txt, mini_schedule).encode('utf-8'))	
     result = r.hset(mini_schedule_html_store, team, mini_schedule_html)
     if result != 0 and result != 1:
         raise Exception('Could not set mini_schedule for ' + team)
-    '''
-    pass
+    print "Stored mini schedule for %s" % team
+
 summary_html = html('http://www.basketball-reference.com/leagues/NBA_2013.html') 
 team_summary = common.get_summary_stats(summary_html)
 for team in team_summary:
@@ -67,5 +55,6 @@ for team in team_summary:
     team_summary_html = json.dumps(pystache.render(txt, team.__dict__).encode('utf-8'))
     result = r.hset(team_summary_html_store, team, team_summary_html)
     if result != 0 and result != 1:
-        raise Exception('Could not set team summary for ' + team)
+        raise Exception('Could not set team summary for ' + team.team)
+    print "Stored summary for %s" % team.team
       
