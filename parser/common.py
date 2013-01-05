@@ -1,9 +1,93 @@
+# coding=ISO-8859-1:1998
 from bs4 import BeautifulSoup
 import re
 
-class TeamSummary:
-    def __init__(self, team, ortg, drtg, pace, oefg, otov, orb, oftfga, defg, dtov, drb, dftfga):
+class TeamStanding:
+    def __init__(self, rank, team, team_name, won, loss, pct, gb):
+        self.rank = rank
         self.team = team
+        self.team_name = team.upper()
+        self.won = won
+        self.loss = loss
+        self. pct = pct
+        self.gb = gb.encode('latin-1')
+
+    def __str__(self):        
+        #return "{0} {1}-{2} {3} {4}".format(self.team, self.won, self.loss, self.pct, self.gb)
+        return "{0} {1}".format(self.team, self.current, self.won, self.loss, self.pct, self.gb)
+
+    def __repr__(self):
+        return self.__str__()
+
+
+def get_conference_standings(conference_standings_html):
+    soup = BeautifulSoup(conference_standings_html)
+    tr = soup.find('table', class_='tablehead').find('tr')
+    standings = {}
+    while tr is not None:       
+        tr = tr.findNextSibling('tr')
+        if (tr is None):
+            break
+        classes = [] if tr.get('class') is None else tr.get('class', [])
+
+        if 'colhead' in classes:
+            conference = tr.find('td').string
+            standings[conference] = []
+            rank = 1
+        elif 'evenrow' in classes or 'oddrow' in classes:
+            tds = tr.findAll('td')
+            standings[conference].append(TeamStanding(
+                rank,
+                re.search('.*/name/(.*)/.*', tds[1].a['href']).group(1),
+                tds[1].a.string,
+                int(tds[2].string),
+                int(tds[3].string),
+                float(tds[4].string),
+                tds[5].string,
+            ))       
+            rank = rank + 1                                 
+
+    return standings
+
+def get_league_or_division_standings(division_standings_html):
+    soup = BeautifulSoup(division_standings_html)
+    tr = soup.find('table', class_='tablehead').find('tr')
+    standings = {}
+    while tr is not None:       
+        tr = tr.findNextSibling('tr')
+        if (tr is None):
+            break
+ 
+        classes = [] if tr.get('class') is None else tr.get('class', [])
+
+        if 'colhead' in classes:
+            conference = tr.find('td').string
+            standings[conference] = []
+            rank = 1
+        elif 'evenrow' in classes or 'oddrow' in classes:
+            tds = tr.findAll('td')
+            standings[conference].append(TeamStanding(
+                rank,
+                re.search('.*/name/(.*)/.*', tds[0].a['href']).group(1),
+                tds[0].a.string,
+                int(tds[1].string),
+                int(tds[2].string),
+                float(tds[3].string),
+                tds[4].string,
+            ))       
+            rank = rank + 1                                 
+
+    return standings
+
+
+class TeamSummary:
+    def __init__(self, team, pw, pl, mov, sos, srs, ortg, drtg, pace, oefg, otov, orb, oftfga, defg, dtov, drb, dftfga):
+        self.team = team
+        self.pw = pw
+        self.pl = pl
+        self.mov = mov
+        self.sos = sos
+        self.srs = srs
         self.ortg = ortg
         self.drtg = drtg
         self.pace = pace
@@ -64,6 +148,11 @@ def get_summary_stats(summary_html):
         team = bbref2espn(bbref_team)
         t = TeamSummary(            
             team,
+            int(tds[3].string),
+            int(tds[4].string),
+            float(tds[5].string),
+            float(tds[6].string),
+            float(tds[7].string),
             float(tds[8].string),
             float(tds[9].string),
             float(tds[10].string),
@@ -78,6 +167,11 @@ def get_summary_stats(summary_html):
         )
         summary.append(t)
 
+    pw_sorted = sorted(summary, key=lambda team_summary: team_summary.srs, reverse=True)
+    pl_sorted = sorted(summary, key=lambda team_summary: team_summary.srs)
+    mov_sorted = sorted(summary, key=lambda team_summary: team_summary.srs, reverse=True)
+    sos_sorted = sorted(summary, key=lambda team_summary: team_summary.srs, reverse=True)
+    srs_sorted = sorted(summary, key=lambda team_summary: team_summary.srs, reverse=True)
     ortg_sorted = sorted(summary, key=lambda team_summary: team_summary.ortg, reverse=True)
     drtg_sorted = sorted(summary, key=lambda team_summary: team_summary.drtg)
     pace_sorted = sorted(summary, key=lambda team_summary: team_summary.pace, reverse=True)
@@ -90,6 +184,11 @@ def get_summary_stats(summary_html):
     drb_sorted = sorted(summary, key=lambda team_summary: team_summary.drb, reverse=True)
     dftfga_sorted = sorted(summary, key=lambda team_summary: team_summary.dftfga)
     for team in summary:
+        team.pw_rank = team.find_rank(pw_sorted)
+        team.pl_rank = team.find_rank(pl_sorted)
+        team.mov_rank = team.find_rank(mov_sorted)
+        team.sos_rank = team.find_rank(sos_sorted)
+        team.srs_rank = team.find_rank(srs_sorted)
         team.ortg_rank = team.find_rank(ortg_sorted)
         team.drtg_rank = team.find_rank(drtg_sorted)
         team.pace_rank = team.find_rank(pace_sorted)

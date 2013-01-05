@@ -28,6 +28,16 @@ exports.findSummaryHtmlByTeam = function (req, res) {
     });
 }
 
+exports.findStandingsHtmlByTeam = function (req, res) {
+    var team = req.params.team;
+    var callback = req.params.callback;
+    client.hget(standings_html_store, team, function(err, data) {
+	var data = callback + '(' + data + ')';
+	data = callback_standings + data;
+	setJsonResponseHeaders(res, data);
+    });
+}
+
 
 
 function setJsonResponseHeaders(res, data) {
