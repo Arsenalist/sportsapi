@@ -1,0 +1,42 @@
+<script>
+sportsapiStandingsOnClick = function(a) {
+   var links = $('.sportsapi-division');
+   var standings = $('.sportsapi-standings-div');
+   for (var i=0; i<links.length; i++) {
+       if (links[i] == a) {
+            $(standings[i]).show();
+            $(links[i]).addClass('selected-division');
+       } else {
+            $(standings[i]).hide();
+            $(links[i]).removeClass('selected-division');
+       }
+   }
+   return false;
+}
+</script>
+<div class="sportsapi-standings-container">
+<div class="sportsapi-division-container">
+{{#standings}} 
+ <a class="sportsapi-division" href="#" onclick="return sportsapiStandingsOnClick(this)">{{division}}</a>
+{{/standings}} 
+</div>
+{{#standings}} 
+    <div class="sportsapi-standings-div">
+    <table>
+    <tr class="header"><td>#</td><td>Team</td><td>W</td><td>L</td><td>Pct</td><td>GB</td></tr>
+    {{#teams}}
+        <tr class="{{#current}}selected{{/current}}"><td>{{rank}}</td><td>{{team_name}}</td><td>{{won}}</td><td>{{loss}}</td><td>{{pct}}</td><td>{{gb}}</td></tr>
+    {{/teams}}
+    </table>
+    </div>
+{{/standings}}
+</div>
+<script>
+
+var standings = $('.sportsapi-standings-div');
+var links = $('.sportsapi-division');
+$(standings[0]).show();
+$(standings[1]).hide();
+$(standings[2]).hide();
+$(links[0]).addClass('selected-division');
+</script>
