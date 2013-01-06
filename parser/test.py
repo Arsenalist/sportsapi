@@ -8,7 +8,6 @@ import pystache
 import codecs
 
 teams = (line.strip() for line in open('./teams.txt'))
-teams = ['tor']
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 line_scores_json_store = 'line_scores_json'
@@ -36,7 +35,7 @@ def nba_structure():
 
 def html(url):
     return urllib2.urlopen(url).read()
-
+'''
 for team in teams:
     schedule_html = html('http://espn.go.com/nba/team/schedule/_/name/' + team)
     latest_game_id = common.get_latest_game_id(schedule_html)
@@ -72,7 +71,7 @@ for team in team_summary:
     if result != 0 and result != 1:
         raise Exception('Could not set team summary for ' + team.team)
     print "Stored summary for %s" % team.team
-
+'''
 league_standings_html = html('http://espn.go.com/nba/standings/_/group/1')
 conference_standings_html = html('http://espn.go.com/nba/standings/_/group/2')
 division_standings_html = html('http://espn.go.com/nba/standings/_/group/3')
@@ -119,7 +118,7 @@ for team in teams:
     result = r.hset(standings_html_store, team, json.dumps(standings_html))
     if result != 0 and result != 1:
         raise Exception('Could not set standings for ' + team.team)
-    #print "Stored standings for ", team        
+    print "Stored standings for ", team        
 
 
 

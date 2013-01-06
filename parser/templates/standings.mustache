@@ -1,14 +1,14 @@
 <script>
 sportsapiStandingsOnClick = function(a) {
-   var links = $('.sportsapi-division');
-   var standings = $('.sportsapi-standings-div');
+   var links = jQuery('.sportsapi-division');
+   var standings = jQuery('.sportsapi-standings-div');
    for (var i=0; i<links.length; i++) {
        if (links[i] == a) {
-            $(standings[i]).show();
-            $(links[i]).addClass('selected-division');
+            jQuery(standings[i]).show();
+            jQuery(links[i]).addClass('selected-division');
        } else {
-            $(standings[i]).hide();
-            $(links[i]).removeClass('selected-division');
+            jQuery(standings[i]).hide();
+            jQuery(links[i]).removeClass('selected-division');
        }
    }
    return false;
@@ -33,10 +33,10 @@ sportsapiStandingsOnClick = function(a) {
 </div>
 <script>
 
-var standings = $('.sportsapi-standings-div');
-var links = $('.sportsapi-division');
-$(standings[0]).show();
-$(standings[1]).hide();
-$(standings[2]).hide();
-$(links[0]).addClass('selected-division');
+var standings = jQuery('.sportsapi-standings-div');
+var links = jQuery('.sportsapi-division');
+jQuery(standings[0]).show();
+jQuery(standings[1]).hide();
+jQuery(standings[2]).hide();
+jQuery(links[0]).addClass('selected-division');
 </script>

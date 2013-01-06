@@ -1,1 +1,1 @@
-function callbackstandings(d){$('#sportsapi-standings').html(d);}
+function callbackstandings(d){jQuery('#sportsapi-standings').html(d);}
